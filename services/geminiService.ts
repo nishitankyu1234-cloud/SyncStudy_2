@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { TestQuestion, UserProfile } from "../types";
 
 // Initialize the client
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_API_KEY_1 });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY_1 });
 
 const MODEL_TEXT = 'gemini-3-flash-preview';
 
