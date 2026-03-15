@@ -1,34 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { TestQuestion, UserProfile } from "../types";
 
-// Vercelに登録した3つのキーを読み込む
-const API_KEYS = [
-  import.meta.env.VITE_GEMINI_API_KEY_1,
-  import.meta.env.VITE_GEMINI_API_KEY_2,
-  import.meta.env.VITE_GEMINI_API_KEY_3
-].filter(Boolean);
+// Initialize the client
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_API_KEY_1 });
 
-// タイムアウトを防ぐための最速モデル
-const MODEL_TEXT = 'gemini-1.5-flash-8b';
+const MODEL_TEXT = 'gemini-3-flash-preview';
 
-// APIキーを順番に試す仕組み
-async function getAIResponse(callback: (ai: any) => Promise<any>) {
-  let lastError;
-  for (const key of API_KEYS) {
-    try {
-      const ai = new GoogleGenAI({ apiKey: key });
-      return await callback(ai);
-    } catch (error) {
-      lastError = error;
-      console.warn("APIキー制限のため、次を試します。");
-      continue;
-    }
-  }
-  throw lastError || new Error("All keys failed.");
-}
-
+/**
+ * Creates a chat session and returns a streaming response generator
+ * Supports text and optional image input with retry logic
+ */
 export const createChatStream = async function* (
-  history: any[],
+  history: { role: 'user' | 'model'; parts: { text?: string; inlineData?: any }[] }[],
   newMessage: string,
   imageDataUrl?: string,
   userProfile?: UserProfile
